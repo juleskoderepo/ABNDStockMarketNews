@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/news_recycler_view"
-    android:scrollbars="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="@dimen/list_divider_height"
+        android:orientation="vertical"
+        tools:listitem="@layout/news_item" />
+
+    <TextView
+        android:id="@+id/empty_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        tools:text="@string/no_news_found" />
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>
