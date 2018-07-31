@@ -18,12 +18,6 @@ import java.util.Date;
 
 public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
 
-    TextView title;
-    TextView section;
-    TextView author;
-    TextView date;
-    TextView summaryLine;
-
     private static final String LOG_TAG = NewsItemAdapter.class.getSimpleName();
 
     NewsItemAdapter(Activity context, ArrayList<NewsItem> newsItems) {
@@ -34,43 +28,51 @@ public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
+        NewsViewHolder viewHolder;
+
         // Check if existing view is being reused, otherwise inflate the view
         View newsItemView = convertView;
         if (newsItemView == null) {
             newsItemView = LayoutInflater.from(getContext()).inflate(
                     R.layout.news_item, parent, false);
+
+            // set up the ViewHolder
+            viewHolder = new NewsViewHolder();
+            viewHolder.titleTextView = newsItemView.findViewById(R.id.story_title);
+            viewHolder.sectionTextView = newsItemView.findViewById(R.id.news_section);
+            viewHolder.authorTextView = newsItemView.findViewById(R.id.author);
+            viewHolder.dateTextView = newsItemView.findViewById(R.id.publish_date);
+            viewHolder.summaryTextView = newsItemView.findViewById(R.id.news_brief);
+
+            // store the holder with the view
+            newsItemView.setTag(viewHolder);
+        } else {
+            viewHolder = (NewsViewHolder) newsItemView.getTag();
         }
 
         // Get the {@link NewsItem} object located at this position in the list
         NewsItem currentItem = getItem(position);
 
-        // Get Views in UI and populate with values from the current item
-        title = newsItemView.findViewById(R.id.story_title);
-        title.setText(currentItem.getTitle());
+        if(currentItem != null){
+            //get the TextViews from the ViewHolder and set the text values
+            viewHolder.titleTextView.setText(currentItem.getTitle());
+            viewHolder.sectionTextView.setText(currentItem.getSection());
+            viewHolder.authorTextView.setText(currentItem.getAuthor());
+            viewHolder.summaryTextView.setText(currentItem.getNewsBrief());
 
-        section = newsItemView.findViewById(R.id.news_section);
-        String sectionInfo = getContext().getString(R.string.section) + currentItem.getSection();
-        section.setText(sectionInfo);
+            String dateStr = currentItem.getPublishDate();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
-        author = newsItemView.findViewById(R.id.author);
-        String byline = getContext().getString(R.string.byline) + currentItem.getAuthor();
-        author.setText(byline);
-
-        date = newsItemView.findViewById(R.id.publish_date);
-        String dateStr = currentItem.getPublishDate();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-
-        try {
-            // Convert the date string to a Date object based on the specified date pattern
-            Date dateObject = format.parse(dateStr);
-            String formattedDate = formatDate(dateObject);
-            date.setText(formattedDate);
-        } catch (ParseException e) {
-            Log.e(LOG_TAG, "Parse exception - date format");
+            try {
+                // Convert the date string to a Date object based on the specified date pattern
+                Date dateObject = format.parse(dateStr);
+                String formattedDate = formatDate(dateObject);
+                viewHolder.dateTextView.setText(formattedDate);
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, "Parse exception - date format");
+            }
+            
         }
-
-        summaryLine = newsItemView.findViewById(R.id.news_brief);
-        summaryLine.setText(currentItem.getNewsBrief());
 
         return newsItemView;
     }
@@ -78,5 +80,14 @@ public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
     private String formatDate(Object dateObj) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd, yyyy");
         return dateFormat.format(dateObj);
+    }
+
+    // this ViewHolder caches the TextViews of our NewItem states
+    static class NewsViewHolder{
+        TextView titleTextView;
+        TextView sectionTextView;
+        TextView authorTextView;
+        TextView dateTextView;
+        TextView summaryTextView;
     }
 }
