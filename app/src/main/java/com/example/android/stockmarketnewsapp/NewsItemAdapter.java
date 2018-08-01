@@ -53,7 +53,7 @@ public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
         // Get the {@link NewsItem} object located at this position in the list
         NewsItem currentItem = getItem(position);
 
-        if(currentItem != null){
+        if (currentItem != null) {
             //get the TextViews from the ViewHolder and set the text values
             viewHolder.titleTextView.setText(currentItem.getTitle());
             viewHolder.sectionTextView.setText(currentItem.getSection());
@@ -71,7 +71,6 @@ public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
             } catch (ParseException e) {
                 Log.e(LOG_TAG, "Parse exception - date format");
             }
-            
         }
 
         return newsItemView;
@@ -83,7 +82,7 @@ public class NewsItemAdapter extends ArrayAdapter<NewsItem> {
     }
 
     // this ViewHolder caches the TextViews of our NewItem states
-    static class NewsViewHolder{
+    static class NewsViewHolder {
         TextView titleTextView;
         TextView sectionTextView;
         TextView authorTextView;

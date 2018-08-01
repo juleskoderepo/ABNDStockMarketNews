@@ -35,6 +35,9 @@ public final class QueryUtils {
      * Tag for log messages
      */
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    private static final int READ_TIMEOUT = 1000;
+    private static final int CONNECT_TIMEOUT = 15000;
+    private static final int SUCCEES_RESPONSE_CODE = 200;
 
     public static List<NewsItem> fetchNews(String requestUrl) {
         URL url = createUrl(requestUrl);
@@ -78,13 +81,13 @@ public final class QueryUtils {
 
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(1000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setReadTimeout(READ_TIMEOUT /* milliseconds */);
+            urlConnection.setConnectTimeout(CONNECT_TIMEOUT /* milliseconds */);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream and parse response if the response was successful (code 200)
-            if (urlConnection.getResponseCode() == 200) {
+            if (urlConnection.getResponseCode() == SUCCEES_RESPONSE_CODE) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {

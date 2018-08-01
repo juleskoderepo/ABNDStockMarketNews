@@ -10,32 +10,32 @@ public class NewsItem {
     /**
      * Title or headline of the news story.
      */
-    private String Title;
+    private String storyTitle;
 
     /**
      * Name of the news section to which the story belongs.
      */
-    private String Section;
+    private String storySection;
 
     /**
      * Website address to the full story.
      */
-    private String WebLink;
+    private String webLink;
 
     /**
      * Short description of the news story.
      */
-    private String NewsBrief;
+    private String newsBrief;
 
     /**
      * Names of the authors of the story.
      */
-    private String Author;
+    private String storyAuthor;
 
     /**
      * Date that the story was last published.
      */
-    private String PublishDate;
+    private String publishDate;
 
     /**
      * Constructor for a new NewsItem object with basic information: title,
@@ -43,11 +43,12 @@ public class NewsItem {
      *
      * @param title   title or headline of the story
      * @param section section to which the story belongs
-     * @param webLink web address to the full story
+     * @param link web address to the full story
      */
-    public NewsItem(String title, String section, String webLink) {
-        Title = title;
-        Section = section;
+    public NewsItem(String title, String section, String link) {
+        storyTitle = title;
+        storySection = section;
+        webLink = link;
     }
 
     /**
@@ -56,19 +57,19 @@ public class NewsItem {
      *
      * @param title       title or headline of the story
      * @param section     section to which the story belongs
-     * @param webLink     web address to the full story
-     * @param newsBrief   short description of the news story
+     * @param link     web address to the full story
+     * @param brief   short description of the news story
      * @param author      one or more contributors to the story
-     * @param publishDate date the story was last published
+     * @param date date the story was last published
      */
-    public NewsItem(String title, String section, String webLink, String newsBrief,
-                    String author, String publishDate) {
-        Title = title;
-        Section = section;
-        WebLink = webLink;
-        NewsBrief = newsBrief;
-        Author = author;
-        PublishDate = publishDate;
+    public NewsItem(String title, String section, String link, String brief,
+                    String author, String date) {
+        storyTitle = title;
+        storySection = section;
+        webLink = link;
+        newsBrief = brief;
+        storyAuthor = author;
+        publishDate = date;
     }
 
     /**
@@ -77,7 +78,7 @@ public class NewsItem {
      * @return Title of the story
      */
     public String getTitle() {
-        return Title;
+        return storyTitle;
     }
 
     /**
@@ -86,7 +87,7 @@ public class NewsItem {
      * @return Section of the story
      */
     public String getSection() {
-        return Section;
+        return storySection;
     }
 
     /**
@@ -95,16 +96,16 @@ public class NewsItem {
      * @return Weblink to the story
      */
     public String getWebLink() {
-        return WebLink;
+        return webLink;
     }
 
     /**
      * Gets the short description of the news story
      *
-     * @return NewsBrief of the story
+     * @return News brief of the story
      */
     public String getNewsBrief() {
-        return NewsBrief;
+        return newsBrief;
     }
 
     /**
@@ -113,7 +114,7 @@ public class NewsItem {
      * @return Author of the story
      */
     public String getAuthor() {
-        return Author;
+        return storyAuthor;
     }
 
     /**
@@ -122,7 +123,7 @@ public class NewsItem {
      * @return PublishDate of the story
      */
     public String getPublishDate() {
-        return PublishDate;
+        return publishDate;
     }
 
 }
