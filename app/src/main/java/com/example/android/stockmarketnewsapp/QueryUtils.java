@@ -35,9 +35,19 @@ public final class QueryUtils {
      * Tag for log messages
      */
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
+
     private static final int READ_TIMEOUT = 1000;
     private static final int CONNECT_TIMEOUT = 15000;
-    private static final int SUCCEES_RESPONSE_CODE = 200;
+
+    private static final String KEY_RESPONSE = "response";
+    private static final String KEY_RESULT = "results";
+    private static final String KEY_FIELDS = "fields";
+    private static final String KEY_TITLE = "webTitle";
+    private static final String KEY_SECTION = "sectionName";
+    private static final String KEY_AUTHOR = "byline";
+    private static final String KEY_DATE = "webPublicationDate";
+    private static final String KEY_URL = "webUrl";
+    private static final String KEY_NEWS_BRIEF = "trailText";
 
     public static List<NewsItem> fetchNews(String requestUrl) {
         URL url = createUrl(requestUrl);
@@ -87,14 +97,14 @@ public final class QueryUtils {
             urlConnection.connect();
 
             // Read the input stream and parse response if the response was successful (code 200)
-            if (urlConnection.getResponseCode() == SUCCEES_RESPONSE_CODE) {
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving earthquake JSON results", e);
+            Log.e(LOG_TAG, "Problem retrieving JSON results", e);
         } finally {
             // Release the connection
             if (urlConnection != null) {
@@ -155,19 +165,19 @@ public final class QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
             JSONObject newsResponse = new JSONObject(jsonResponse);
-            JSONObject responseObject = newsResponse.getJSONObject("response");
-            JSONArray newsResults = responseObject.getJSONArray("results");
+            JSONObject responseObject = newsResponse.getJSONObject(KEY_RESPONSE);
+            JSONArray newsResults = responseObject.getJSONArray(KEY_RESULT);
 
             for (int i = 0; i < newsResults.length(); i++) {
                 JSONObject newsObject = (JSONObject) newsResults.get(i);
-                JSONObject newsFields = newsObject.getJSONObject("fields");
+                JSONObject newsFields = newsObject.getJSONObject(KEY_FIELDS);
 
-                String title = newsObject.getString("webTitle");
-                String section = newsObject.getString("sectionName");
-                String author = newsFields.getString("byline");
-                String publishDate = newsObject.getString("webPublicationDate");
-                String itemUrl = newsObject.getString("webUrl");
-                String newsBrief = newsFields.getString("trailText");
+                String title = newsObject.getString(KEY_TITLE);
+                String section = newsObject.getString(KEY_SECTION);
+                String author = newsFields.getString(KEY_AUTHOR);
+                String publishDate = newsObject.getString(KEY_DATE);
+                String itemUrl = newsObject.getString(KEY_URL);
+                String newsBrief = newsFields.getString(KEY_NEWS_BRIEF);
 
                 NewsItem newsItem = new NewsItem(title, section, itemUrl, newsBrief, author,
                         publishDate);
