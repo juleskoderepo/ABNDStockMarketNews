@@ -4,12 +4,15 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,11 +24,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class NewsActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<NewsItem>> {
 
     private static final String GUARDIAN_NEWS_REQUEST =
-            "http://content.guardianapis.com/search?tag=business/stock-markets|business/us-markets|business/emerging-markets&rights=developer-community&from-date=2018-01-01&order-by=newest&show-fields=trailText,thumbnail,byline&api-key=37220e4c-85dd-438f-88a9-6e68a5274211";
+            "http://content.guardianapis.com/search";
+    private static final String GUARDIAN_API_KEY = BuildConfig.APIKEY;
     private static final int NEWSAPP_LOADER_ID = 1;
 
     private TextView emptyTV;
@@ -103,6 +108,8 @@ public class NewsActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -110,7 +117,73 @@ public class NewsActivity extends AppCompatActivity
 
     @Override
     public Loader<List<NewsItem>> onCreateLoader(int id, Bundle args) {
-        return new NewsLoader(NewsActivity.this, GUARDIAN_NEWS_REQUEST);
+        // Retrieve app preferences in a SharedPreference object
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Retrieve preference object key-value pairs. The first parameter
+        // is the key for this preference. The second parameter is the default value
+        // for this preference.
+        String queryParamOrderBy = getString(R.string.settings_order_by_key);
+        String queryParamFromDate = getString(R.string.settings_from_date_key);
+        String queryParamToDate = getString(R.string.settings_to_date_key);
+        String queryParamPageSize = getString(R.string.settings_page_size_key);
+
+        String orderBy = sharedPrefs.getString(
+                queryParamOrderBy,
+                getString(R.string.settings_order_by_default));
+
+        String fromDate = sharedPrefs.getString(
+                queryParamFromDate,
+                getString(R.string.settings_from_date_default));
+
+        String toDate = sharedPrefs.getString(
+                queryParamToDate,
+                getString(R.string.settings_to_date_default));
+
+        String pageSize = sharedPrefs.getString(
+                queryParamPageSize,
+                getString(R.string.settings_page_size_default));
+
+        //Retrieve other query parameters and values
+        String queryParamTag = getString(R.string.query_param_tag);
+        String queryParamTagValue = getString(R.string.query_param_tag_values);
+        String queryParamRights = getString(R.string.query_param_rights);
+        String queryParamRightsValue = getString(R.string.query_param_rights_values);
+        String queryParamShowFields = getString(R.string.query_param_show_fields);
+        String queryParamShowFieldsValue = getString(R.string.query_param_show_fields_values);
+        String queryParamApiKey = getString(R.string.query_param_api_key);
+
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(GUARDIAN_NEWS_REQUEST);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it.
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query parameter and its value.
+        uriBuilder.appendQueryParameter(queryParamTag, queryParamTagValue);
+        uriBuilder.appendQueryParameter(queryParamRights, queryParamRightsValue);
+        uriBuilder.appendQueryParameter(queryParamShowFields, queryParamShowFieldsValue);
+        uriBuilder.appendQueryParameter(queryParamOrderBy, orderBy);
+
+        // Check settings values and append parameter only if value is not null or empty
+        String fromDatePref = sharedPrefs.getString(queryParamFromDate, "");
+        String toDatePref = sharedPrefs.getString(queryParamToDate, "");
+        String pageSizePref = sharedPrefs.getString(queryParamPageSize, "");
+
+        if (fromDatePref != null && !fromDatePref.isEmpty()) {
+            uriBuilder.appendQueryParameter(queryParamFromDate, fromDate);
+        }
+        if (toDatePref != null && !toDatePref.isEmpty()) {
+            uriBuilder.appendQueryParameter(queryParamToDate, toDate);
+        }
+        if (pageSizePref != null && !pageSizePref.isEmpty()) {
+            uriBuilder.appendQueryParameter(queryParamPageSize, pageSize);
+        }
+
+        uriBuilder.appendQueryParameter(queryParamApiKey, GUARDIAN_API_KEY);
+
+        // pass complete web request URI string in NewsLoader object
+        return new NewsLoader(NewsActivity.this, uriBuilder.toString());
     }
 
     @Override
